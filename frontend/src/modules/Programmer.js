@@ -7,16 +7,18 @@ import { useElectrodeState } from './hooks/useElectrodeState';
 import ElectrodeManager from './components/ElectrodeManager';
 import LoadingSpinner from './components/LoadingSpinner';
 
-function Programmer({ patient}) {
-
+function Programmer({ patient, v: propV }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const type = 'leaddbs';
   const mode = 'standalone';
   const timeline = 'optimizer';
-  const location = useLocation();
-  const v = location.state.v;
+
+  const v = propV ?? location.state?.v ?? null;
+
   console.log('OutputV From StimPyPer', v);
-  // Use custom hook for state management
+
   const {
     patientStates,
     patients,

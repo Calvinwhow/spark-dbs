@@ -132,8 +132,159 @@ label {
   z-index: 1;
 }
 
+.prior-viewer-page {
+  width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #fff;
+}
+
+.prior-viewer-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: 100%;
+  height: 72px;
+  overflow: hidden;
+}
+
+.prior-viewer-title,
+.prior-viewer-model {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 24px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prior-viewer-title {
+  background: #375d7a;
+}
+
+.prior-viewer-model {
+  background: #d3d3d3;
+  color: #111;
+}
+
+.prior-viewer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  height: 64px;
+  border-bottom: 1px solid #ddd;
+  background: #f7f7f7;
+}
+
+.prior-viewer-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+.prior-button-group,
+.prior-source-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.prior-stim-loader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.prior-stim-input {
+  width: min(36vw, 420px);
+  height: 38px;
+  min-width: 220px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.prior-stim-error {
+  max-width: 260px;
+  color: #b00020;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.prior-electrode-stage {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 136px);
+  overflow: auto;
+}
+
+.prior-electrode-scale {
+  transform: scale(0.78);
+  transform-origin: top center;
+  width: 1280px;
+  min-height: 980px;
+  margin: 0 auto;
+}
+
+.prior-electrode-scale .container {
+  margin-left: 0;
+  justify-content: center;
+  overflow: visible;
+}
+
+.prior-electrode-scale .control-panel,
+.prior-electrode-scale .control-panel-inactive {
+  padding-top: 20px;
+}
+
+.prior-electrode-scale .model-selector {
+  margin-top: 0;
+}
+
+.prior-electrode-scale .electrode-container {
+  margin-right: 0;
+  margin-top: 0;
+}
+
+@media (max-width: 1000px) {
+  .prior-viewer-header {
+    grid-template-columns: 1fr;
+    height: 96px;
+  }
+
+  .prior-viewer-title,
+  .prior-viewer-model {
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .prior-viewer-toolbar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 84px;
+    padding: 10px;
+  }
+
+  .prior-electrode-stage {
+    height: calc(100vh - 180px);
+  }
+
+  .prior-electrode-scale {
+    transform-origin: top left;
+    margin-left: 8px;
+  }
+}
+
 
 /* .tabs-container {
   justify-content: center;
 } */
-

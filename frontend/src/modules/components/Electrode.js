@@ -60,6 +60,7 @@ function Electrode({
   setTemplateSpace,
   showViewer,
   setShowViewer,
+  disableBodyZoom = false,
   // data,
 }) {
   console.log(name, allQuantities, quantities, selectedValues, IPG, totalAmplitude, parameters, visModel, sessionTitle, togglePosition, percAmpToggle, volAmpToggle, contactNaming, adornment, historical, elspec, electrodeLabel, templateSpace, setTemplateSpace, showViewer, setShowViewer);
@@ -83,8 +84,10 @@ function Electrode({
   }, []);
 
   useEffect(() => {
-    windowUtils.setZoomLevel(70); // This will zoom out to 70%
-  }, []);
+    if (!disableBodyZoom) {
+      windowUtils.setZoomLevel(70); // This will zoom out to 70%
+    }
+  }, [disableBodyZoom]);
 
   const parseEtageidx = (etageidx) => {
     return etageidx.map((levelStr) => {

@@ -68,25 +68,25 @@ export const processImportedStimulationData = (jsonData, electrodeModel) => {
   console.log('Processing imported amplitude:', jsonData.amplitude);
 
   for (let j = 1; j < 5; j++) {
-    newTotalAmplitude[j] = jsonData.amplitude[1][j - 1];
-    newTotalAmplitude[j + 4] = jsonData.amplitude[0][j - 1];
+    newTotalAmplitude[j] = jsonData.amplitude?.[1]?.[j - 1] || 0;
+    newTotalAmplitude[j + 4] = jsonData.amplitude?.[0]?.[j - 1] || 0;
 
     const leftKey = `Ls${j}`;
     const rightKey = `Rs${j}`;
     
     // Process voltage/amplitude toggles
-    if (jsonData[leftKey].va === 2) {
+    if (jsonData[leftKey]?.va === 2) {
       newAllVolAmpToggles[j] = 'center';
       newAllTogglePositions[j] = '%';
-    } else if (jsonData[leftKey].va === 1) {
+    } else if (jsonData[leftKey]?.va === 1) {
       newAllVolAmpToggles[j] = 'right';
       newAllTogglePositions[j] = 'V';
     }
 
-    if (jsonData[rightKey].va === 2) {
+    if (jsonData[rightKey]?.va === 2) {
       newAllVolAmpToggles[j + 4] = 'center';
       newAllTogglePositions[j + 4] = '%';
-    } else if (jsonData[rightKey].va === 1) {
+    } else if (jsonData[rightKey]?.va === 1) {
       newAllVolAmpToggles[j + 4] = 'right';
       newAllTogglePositions[j + 4] = 'V';
     }

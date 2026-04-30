@@ -10,9 +10,9 @@
 }
 
 .landing-page-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   text-align: center;
 }
 
@@ -27,33 +27,62 @@
 .landing-page-button {
   font-size: 1rem;
   color: #fff;
-  background-color: #007bff;
+  background-color: #111;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .landing-page-button:hover {
-  background-color: #0056b3;
+  background-color: #333;
 }
 
-.logo-container {
-  margin-bottom: 20px;
+.landing-page-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
-.rotating-logo {
-  width: 150px;
-  height: auto;
-  animation: rotate 10s linear infinite;
+.standalone-programmer-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 960px);
 }
 
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.programmer-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.programmer-input {
+  min-height: 42px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: white;
+  padding: 10px 12px;
+  font-size: 1rem;
+}
+
+.reconstruction-input,
+.optimization-input {
+  width: 340px;
+}
+
+.standalone-status {
+  max-width: 640px;
+  color: #555;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.standalone-error {
+  color: #b00020;
+  font-weight: bold;
+  text-align: center;
 }
