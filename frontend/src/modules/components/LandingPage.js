@@ -50,14 +50,14 @@ function LandingPage() {
       }
 
       const electrodeData = await postPath(
-        'http://localhost:8000/api/retrieve-electrode-data',
+        '/api/retrieve-electrode-data',
         programmerInputs.reconstructionFilePath.trim(),
       );
 
       let optimizationJson = null;
       if (programmerInputs.optimizationJsonPath.trim()) {
         optimizationJson = await postPath(
-          'http://localhost:8000/api/retrieve-optimization-json',
+          '/api/retrieve-optimization-json',
           programmerInputs.optimizationJsonPath.trim(),
         );
       }

@@ -1,7 +1,10 @@
 import json
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from electrode import setup_app
@@ -54,7 +57,28 @@ def retrieve_electrode_data(request: RetrieveElectrodeDataRequest):
     return {"elmodels": elmodels, "patient_id": patient_id}
 
 
+frontend_build_dir = Path(__file__).resolve().parent.parent / "frontend" / "build"
+
+if frontend_build_dir.exists():
+    static_dir = frontend_build_dir / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
+    @app.get("/{requested_path:path}", include_in_schema=False)
+    def serve_frontend(requested_path: str):
+        requested_file = frontend_build_dir / requested_path
+        if requested_path and requested_file.is_file():
+            return FileResponse(requested_file)
+
+        index_file = frontend_build_dir / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+
+        raise HTTPException(status_code=404, detail="Frontend build not found")
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="127.0.0.1", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)

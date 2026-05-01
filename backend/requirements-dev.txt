@@ -1,1 +1,0 @@
-stim-pyper @ git+https://github.com/Calvinwhow/StimPyPer.git@main

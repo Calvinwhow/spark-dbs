@@ -34,14 +34,6 @@ export const useElectrodeState = (patient, timeline, type, mode, v) => {
 
       setIsLoading(true);
       try {
-        // const response = await fetch('http://localhost:8000/api/retrieve-electrode-data');
-        // if (!response.ok) {
-        //   console.error('Failed to fetch patient data');
-        //   return;
-        // }
-
-        // const data = await response.json();
-
         // Get stimulation data from API response
         const stimulationData = {
           type: 'leaddbs',
