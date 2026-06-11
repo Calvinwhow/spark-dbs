@@ -213,6 +213,11 @@ label {
   font-size: 14px;
 }
 
+.prior-stim-file {
+  max-width: 210px;
+  font-size: 13px;
+}
+
 .prior-stim-error {
   max-width: 260px;
   color: #b00020;

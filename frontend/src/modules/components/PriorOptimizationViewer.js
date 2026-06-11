@@ -266,64 +266,69 @@ function PriorOptimizationViewer({ patient, optimizationJson, electrodeModel }) 
     });
   };
 
-  const loadStimParamFromPath = async (filePath) => {
-    const response = await fetch('/api/retrieve-optimization-json', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ file_path: filePath }),
-    });
+  const applyStimParams = (rawStimParams) => {
+    const vector = extractStimParamVector(rawStimParams);
 
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}));
-      throw new Error(body.detail || `Could not load stim params: ${response.status}`);
+    if (!vector) {
+      throw new Error('Could not find a numeric stim vector.');
     }
 
-    return response.json();
+    const sourceState = vectorToContactState(vector, viewerState.elspec.numel);
+
+    setViewerState((prev) => ({
+      ...prev,
+      allQuantities: {
+        ...prev.allQuantities,
+        [hemisphereKey]: sourceState.quantities,
+      },
+      allSelectedValues: {
+        ...prev.allSelectedValues,
+        [hemisphereKey]: sourceState.selectedValues,
+      },
+      allTotalAmplitudes: {
+        ...prev.allTotalAmplitudes,
+        [hemisphereKey]: sourceState.amplitude,
+      },
+      allTogglePositions: {
+        ...prev.allTogglePositions,
+        [hemisphereKey]: 'mA',
+      },
+      allPercAmpToggles: {
+        ...prev.allPercAmpToggles,
+        [hemisphereKey]: 'center',
+      },
+    }));
+    setStimParamError('');
   };
 
-  const handleLoadStimParam = async () => {
+  const handleLoadStimParam = () => {
     try {
-      const trimmed = stimParamInput.trim();
-      const rawStimParams = trimmed.startsWith('/')
-        ? await loadStimParamFromPath(trimmed)
-        : stimParamInput;
-      const vector = extractStimParamVector(rawStimParams);
-
-      if (!vector) {
-        throw new Error('Could not find a numeric stim vector.');
-      }
-
-      const sourceState = vectorToContactState(vector, viewerState.elspec.numel);
-
-      setViewerState((prev) => ({
-        ...prev,
-        allQuantities: {
-          ...prev.allQuantities,
-          [hemisphereKey]: sourceState.quantities,
-        },
-        allSelectedValues: {
-          ...prev.allSelectedValues,
-          [hemisphereKey]: sourceState.selectedValues,
-        },
-        allTotalAmplitudes: {
-          ...prev.allTotalAmplitudes,
-          [hemisphereKey]: sourceState.amplitude,
-        },
-        allTogglePositions: {
-          ...prev.allTogglePositions,
-          [hemisphereKey]: 'mA',
-        },
-        allPercAmpToggles: {
-          ...prev.allPercAmpToggles,
-          [hemisphereKey]: 'center',
-        },
-      }));
-      setStimParamError('');
+      applyStimParams(stimParamInput);
     } catch (error) {
       setStimParamError(error.message);
     }
+  };
+
+  const handleStimParamFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const contents = reader.result || '';
+        setStimParamInput(contents);
+        applyStimParams(contents);
+      } catch (error) {
+        setStimParamError(error.message);
+      }
+    };
+    reader.onerror = () => {
+      setStimParamError('Could not read stim params file.');
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -400,8 +405,14 @@ function PriorOptimizationViewer({ patient, optimizationJson, electrodeModel }) 
             type="text"
             value={stimParamInput}
             onChange={(event) => setStimParamInput(event.target.value)}
-            placeholder="Paste stim params"
+            placeholder="Paste stim params or choose JSON"
             className="prior-stim-input"
+          />
+          <input
+            type="file"
+            accept=".json,application/json,text/plain"
+            onChange={handleStimParamFileChange}
+            className="prior-stim-file"
           />
           <Button
             onClick={handleLoadStimParam}

@@ -16,26 +16,24 @@ npm start
 
 ## Docker
 
-Build the single-container viewer:
+Build and run with Docker Compose:
 
 ```bash
-docker build -t spark-dbs-viewer .
-```
-
-Run it:
-
-```bash
-docker run --rm -p 8000:8000 spark-dbs-viewer
+docker compose up --build
 ```
 
 Open `http://localhost:8000`.
 
-The backend reads reconstruction and JSON files from inside the container. To open files from your host machine, mount the folder that contains them and use the mounted path in the app:
+### Programmer Session API
+
+The app opens a programmer session from uploaded files instead of backend-visible filesystem paths. In the browser, drop or choose the reconstruction `.mat` file and optional optimizer JSON.
+
+Backend services can call the same API with multipart form data:
 
 ```bash
-docker run --rm -p 8000:8000 \
-  -v /Users/cu135/Documents:/data/Documents:ro \
-  spark-dbs-viewer
+curl -X POST http://localhost:8000/api/programmer-session \
+  -F "reconstruction_file=@/path/to/sub-example_desc-reconstruction.mat" \
+  -F "optimization_json_file=@/path/to/optimizer.json"
 ```
 
-Then enter paths like `/data/Documents/path/to/file.json`.
+`optimization_json_file` is optional.

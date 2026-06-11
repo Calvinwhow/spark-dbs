@@ -8,28 +8,22 @@ function LandingPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const [programmerInputs, setProgrammerInputs] = useState({
-    reconstructionFilePath: '',
-    optimizationJsonPath: '',
-    optimizationJson: null,
+  const [programmerFiles, setProgrammerFiles] = useState({
+    reconstructionFile: null,
+    optimizationJsonFile: null,
   });
 
-  const handleProgrammerInputChange = (event) => {
-    const { name, value } = event.target;
+  const postProgrammerSession = async () => {
+    const formData = new FormData();
+    formData.append('reconstruction_file', programmerFiles.reconstructionFile);
 
-    setProgrammerInputs((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+    if (programmerFiles.optimizationJsonFile) {
+      formData.append('optimization_json_file', programmerFiles.optimizationJsonFile);
+    }
 
-  const postPath = async (url, filePath) => {
-    const response = await fetch(url, {
+    const response = await fetch('/api/programmer-session', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ file_path: filePath }),
+      body: formData,
     });
 
     if (!response.ok) {
@@ -40,36 +34,39 @@ function LandingPage() {
     return response.json();
   };
 
+  const handleFileSelect = (name, files) => {
+    const file = files?.[0] || null;
+    setProgrammerFiles((prev) => ({
+      ...prev,
+      [name]: file,
+    }));
+  };
+
+  const handleDrop = (name) => (event) => {
+    event.preventDefault();
+    handleFileSelect(name, event.dataTransfer.files);
+  };
+
+  const preventDefault = (event) => {
+    event.preventDefault();
+  };
+
   const handleOpenProgrammer = async () => {
     setErrorMessage('');
     setIsLoading(true);
 
     try {
-      if (!programmerInputs.reconstructionFilePath.trim()) {
-        throw new Error('Enter the reconstruction .mat path.');
+      if (!programmerFiles.reconstructionFile) {
+        throw new Error('Drop/select a reconstruction .mat file.');
       }
 
-      const electrodeData = await postPath(
-        '/api/retrieve-electrode-data',
-        programmerInputs.reconstructionFilePath.trim(),
-      );
-
-      let optimizationJson = null;
-      if (programmerInputs.optimizationJsonPath.trim()) {
-        optimizationJson = await postPath(
-          '/api/retrieve-optimization-json',
-          programmerInputs.optimizationJsonPath.trim(),
-        );
-      }
+      const session = await postProgrammerSession();
 
       navigate('/programmer', {
         state: {
-          patient: {
-            id: electrodeData.patient_id || 'Prior Optimization',
-            elmodel: electrodeData.elmodels[0],
-          },
-          electrodeModel: electrodeData.elmodels[0],
-          optimizationJson: optimizationJson?.v ?? optimizationJson ?? null,
+          patient: session.patient,
+          electrodeModel: session.electrodeModel,
+          optimizationJson: session.optimizationJson,
         },
       });
     } catch (error) {
@@ -85,25 +82,43 @@ function LandingPage() {
       <h1 className="landing-page-title">StimPyPer</h1>
 
       <div className="standalone-programmer-panel">
+        <div className="programmer-upload-grid">
+          <label
+            className="programmer-dropzone"
+            onDrop={handleDrop('reconstructionFile')}
+            onDragOver={preventDefault}
+          >
+            <span className="programmer-dropzone-title">Reconstruction .mat</span>
+            <span className="programmer-dropzone-detail">
+              {programmerFiles.reconstructionFile?.name || 'Drop file here or click to choose'}
+            </span>
+            <input
+              type="file"
+              accept=".mat"
+              onChange={(event) => handleFileSelect('reconstructionFile', event.target.files)}
+              className="programmer-file-input"
+            />
+          </label>
+
+          <label
+            className="programmer-dropzone"
+            onDrop={handleDrop('optimizationJsonFile')}
+            onDragOver={preventDefault}
+          >
+            <span className="programmer-dropzone-title">Optimizer JSON</span>
+            <span className="programmer-dropzone-detail">
+              {programmerFiles.optimizationJsonFile?.name || 'Optional: drop JSON or click to choose'}
+            </span>
+            <input
+              type="file"
+              accept=".json,application/json"
+              onChange={(event) => handleFileSelect('optimizationJsonFile', event.target.files)}
+              className="programmer-file-input"
+            />
+          </label>
+        </div>
+
         <div className="programmer-input-row">
-          <input
-            type="text"
-            name="reconstructionFilePath"
-            placeholder="Path to reconstruction .mat"
-            value={programmerInputs.reconstructionFilePath}
-            onChange={handleProgrammerInputChange}
-            className="programmer-input reconstruction-input"
-          />
-
-          <input
-            type="text"
-            name="optimizationJsonPath"
-            placeholder="Optional path to optimizer JSON"
-            value={programmerInputs.optimizationJsonPath}
-            onChange={handleProgrammerInputChange}
-            className="programmer-input optimization-input"
-          />
-
           <button
             onClick={handleOpenProgrammer}
             className="landing-page-button"
@@ -114,7 +129,7 @@ function LandingPage() {
         </div>
 
         <div className="standalone-status">
-          Electrode model is read from the reconstruction file.
+          Files are sent to the backend through the programmer session API.
         </div>
 
         {errorMessage && (
