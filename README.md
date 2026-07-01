@@ -22,7 +22,7 @@ Build and run with Docker Compose:
 docker compose up --build
 ```
 
-Open `http://localhost:8000`.
+Open `http://localhost:8082`.
 
 ### Programmer Session API
 
@@ -31,7 +31,7 @@ The app opens a programmer session from uploaded files instead of backend-visibl
 Backend services can call the same API with multipart form data:
 
 ```bash
-curl -X POST http://localhost:8000/api/programmer-session \
+curl -X POST http://localhost:8082/api/programmer-session \
   -F "reconstruction_file=@/path/to/sub-example_desc-reconstruction.mat" \
   -F "optimization_json_file=@/path/to/optimizer.json"
 ```

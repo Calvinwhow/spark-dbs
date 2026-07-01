@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8082:8082"
     volumes:
       # HOST DATA MOUNT:
       # - Left side is the real folder on your Mac.

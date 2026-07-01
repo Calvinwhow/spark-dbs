@@ -45,6 +45,12 @@ def read_optimization_json(uploaded_path: Path):
         raise HTTPException(status_code=422, detail=f"Invalid optimization JSON: {exc}")
 
 
+def normalize_optimization_json(optimization_json):
+    if isinstance(optimization_json, dict) and "v" in optimization_json:
+        return optimization_json["v"]
+    return optimization_json
+
+
 def normalize_electrode_models(elmodels):
     if isinstance(elmodels, str):
         elmodels = [elmodels]
@@ -74,9 +80,7 @@ def create_programmer_session(
 
     if optimization_json_file is not None and optimization_json_file.filename:
         optimization_json_path = save_uploaded_file(optimization_json_file)
-        optimization_json = read_optimization_json(optimization_json_path)
-        if isinstance(optimization_json, dict) and "v" in optimization_json:
-            optimization_json = optimization_json["v"]
+        optimization_json = normalize_optimization_json(read_optimization_json(optimization_json_path))
 
     return {
         "patient": {
@@ -113,4 +117,4 @@ if frontend_build_dir.exists():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8082)
