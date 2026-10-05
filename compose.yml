@@ -6,18 +6,3 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:8082"
-    volumes:
-      # HOST DATA MOUNT:
-      # - Left side is the real folder on your Mac.
-      # - Right side is where that same folder appears inside the container.
-      # - In the web app, enter the RIGHT-SIDE container path, not the Mac path.
-      #
-      # Example:
-      #   Mac file:
-      #     /Users/cu135/hires_backdrops/t/sar_el/sub-CbctDbs0420_desc-reconstruction.mat
-      #   App/container path:
-      #     /data/hires_backdrops/t/sar_el/sub-CbctDbs0420_desc-reconstruction.mat
-      - type: bind
-        source: ${SPARK_DBS_DATA_DIR:-/Users/cu135/hires_backdrops}
-        target: /data/hires_backdrops
-        read_only: true
